@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdfdfd;
+  --foreground: #2c2c2c;
+  --bible-accent: #8b4513; /* 가죽 표지 느낌의 브라운 */
+  --bible-paper: #ffffff;
+  --bible-text-soft: #555555;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-bible-accent: var(--bible-accent);
+  --color-bible-paper: var(--bible-paper);
+  --color-bible-text-soft: var(--bible-text-soft);
+
+  --font-myeongjo: var(--font-nanum-myeongjo), serif;
+  --font-sans: var(--font-nanum-gothic), sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nanum-gothic), sans-serif;
+  overflow-x: hidden;
+}
+
+.font-myeongjo {
+  font-family: var(--font-nanum-myeongjo), serif;
+}
+
+/* Zen Mode 애니메이션 및 스타일 */
+.zen-sidebar-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
