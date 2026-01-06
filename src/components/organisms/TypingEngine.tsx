@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useTyping } from '@/hooks/useTyping';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { decomposeHangul } from '@/utils/hangulUtils';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -41,6 +42,15 @@ export const TypingEngine: React.FC = () => {
         }
     };
 
+    // 현재 입력 중인 글자의 자모 분해
+    const currentCharJamo = useMemo(() => {
+        const currentIndex = charFeedbacks.findIndex(fb => fb.status === 'current');
+        if (currentIndex === -1) return [];
+
+        const currentChar = charFeedbacks[currentIndex].char;
+        return decomposeHangul(currentChar);
+    }, [charFeedbacks]);
+
     return (
         <div
             className="flex flex-col items-start w-full px-4 cursor-text"
@@ -74,6 +84,19 @@ export const TypingEngine: React.FC = () => {
                                 e.stopPropagation();
                                 handleCharClick(idx);
                             }}>
+                            {/* 현재 입력 중인 글자와 겹쳐서 자모 표시 */}
+                            {fb.status === 'current' && currentCharJamo.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 flex items-center justify-center gap-0.5 text-2xl md:text-3xl text-bible-accent/70 font-sans pointer-events-none"
+                                >
+                                    {currentCharJamo.map((jamo, jamoIdx) => (
+                                        <span key={jamoIdx}>{jamo}</span>
+                                    ))}
+                                </motion.div>
+                            )}
                             {fb.char === ' ' ? '\u00A0' : fb.char}
                         </motion.span>
                     ))}
