@@ -9,11 +9,9 @@ export const useTyping = () => {
     const charFeedbacks = useMemo(() => {
         return targetText.split('').map((char, index) => {
             const userChar = userInput[index];
-            let status: 'pending' | 'correct' | 'wrong' | 'current' = 'pending';
+            let status: 'pending' | 'correct' | 'wrong' = 'pending';
 
-            if (index === userInput.length) {
-                status = 'current';
-            } else if (userChar === undefined) {
+            if (userChar === undefined) {
                 status = 'pending';
             } else if (userChar === char) {
                 status = 'correct';

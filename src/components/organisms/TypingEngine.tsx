@@ -42,14 +42,21 @@ export const TypingEngine: React.FC = () => {
         }
     };
 
-    // 현재 입력 중인 글자의 자모 분해
-    const currentCharJamo = useMemo(() => {
-        const currentIndex = charFeedbacks.findIndex(fb => fb.status === 'current');
-        if (currentIndex === -1) return [];
+    // 사용자가 입력하는 자모를 실시간으로 표시
+    const currentTypingJamo = useMemo(() => {
+        if (userInput.length === 0 || userInput.length > targetText.length) return [];
 
-        const currentChar = charFeedbacks[currentIndex].char;
-        return decomposeHangul(currentChar);
-    }, [charFeedbacks]);
+        // 마지막 입력 글자
+        const lastInputChar = userInput[userInput.length - 1];
+        const targetChar = targetText[userInput.length - 1];
+
+        // 아직 완성되지 않았거나 틀린 경우 자모 표시
+        if (lastInputChar !== targetChar) {
+            return decomposeHangul(lastInputChar);
+        }
+
+        return [];
+    }, [userInput, targetText]);
 
     return (
         <div
@@ -66,33 +73,33 @@ export const TypingEngine: React.FC = () => {
             </div>
 
             {/* 성경 구절 디스플레이 */}
-            <div className="relative text-3xl md:text-4xl font-myeongjo font-bold leading-relaxed text-left tracking-wide min-h-[200px]">
-                <div className="flex flex-wrap gap-x-1 gap-y-4">
+            <div className="relative text-2xl md:text-3xl font-myeongjo font-bold leading-relaxed text-left tracking-normal min-h-[200px]">
+                <div className="flex flex-wrap gap-x-0.5 gap-y-4">
                     {charFeedbacks.map((fb, idx) => (
                         <motion.span
                             key={idx}
                             initial={{ opacity: 0.3 }}
                             animate={{
-                                opacity: fb.status === 'pending' ? 0.3 : 1,
-                                color: fb.status === 'correct' ? '#2c2c2c' : fb.status === 'wrong' ? '#ef4444' : fb.status === 'current' ? '#8b4513' : '#a0a0a0',
+                                opacity: fb.status === 'pending' ? 0.5 : 1,
+                                color: fb.status === 'correct' ? '#2c2c2c' : fb.status === 'wrong' ? '#ef4444' : '#a0a0a0',
                             }}
                             className={cn(
                                 "relative inline-block transition-colors duration-200 cursor-pointer hover:opacity-80",
-                                fb.status === 'current' && "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-bible-accent after:animate-pulse"
+                                idx === userInput.length && "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-bible-accent after:animate-pulse"
                             )}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleCharClick(idx);
                             }}>
-                            {/* 현재 입력 중인 글자와 겹쳐서 자모 표시 */}
-                            {fb.status === 'current' && currentCharJamo.length > 0 && (
+                            {/* 사용자가 입력하는 자모를 글자와 겹쳐서 표시 */}
+                            {idx === userInput.length - 1 && currentTypingJamo.length > 0 && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="absolute inset-0 flex items-center justify-center gap-0.5 text-2xl md:text-3xl text-bible-accent/70 font-sans pointer-events-none"
+                                    className="absolute inset-0 flex items-center justify-center gap-0.5 text-2xl md:text-3xl text-bible-accent/80 font-sans pointer-events-none"
                                 >
-                                    {currentCharJamo.map((jamo, jamoIdx) => (
+                                    {currentTypingJamo.map((jamo, jamoIdx) => (
                                         <span key={jamoIdx}>{jamo}</span>
                                     ))}
                                 </motion.div>
