@@ -11,9 +11,9 @@ export const ZenSidebar: React.FC = () => {
 
     return (
         <>
-            {/* 트리거 버튼 (마우스 오버나 클릭 시 보임) */}
+            {/* 트리거 버튼 (오른쪽 위) */}
             <motion.button
-                className="fixed right-6 top-1/2 -translate-y-1/2 p-3 bg-white/80 backdrop-blur-md shadow-xl rounded-full z-50 hover:bg-bible-accent hover:text-white transition-colors border border-gray-100"
+                className="fixed right-6 top-6 p-3 bg-white/80 backdrop-blur-md shadow-xl rounded-full z-50 hover:bg-bible-accent hover:text-white transition-colors border border-gray-100"
                 onMouseEnter={() => setIsOpen(true)}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: isOpen ? 0 : 0.6, x: 0 }}
@@ -31,11 +31,14 @@ export const ZenSidebar: React.FC = () => {
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         onMouseLeave={() => setIsOpen(false)}
-                        className="fixed right-0 top-0 h-full w-80 bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.05)] z-50 p-8 border-l border-gray-100 flex flex-col"
+                        className="fixed right-0 top-0 h-full w-[66.67vw] max-w-md bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.05)] z-50 p-8 border-l border-gray-100 flex flex-col"
                     >
-                        <div className="flex items-center gap-3 mb-10 text-bible-accent">
-                            <Layers size={24} />
-                            <h2 className="text-xl font-myeongjo font-bold">환경 설정</h2>
+                        <div className="flex items-center justify-between mb-10 text-bible-accent">
+                            <div className="flex items-center gap-3">
+                                <Layers size={24} />
+                                <h2 className="text-xl font-myeongjo font-bold">환경 설정</h2>
+                            </div>
+                            <span className="text-xs text-gray-400 font-sans">v1.1</span>
                         </div>
 
                         <div className="space-y-8 flex-1">
@@ -51,8 +54,8 @@ export const ZenSidebar: React.FC = () => {
                                             key={num}
                                             onClick={() => setSettings({ repetitionCount: num })}
                                             className={`w-10 h-10 rounded-lg text-sm transition-all ${settings.repetitionCount === num
-                                                    ? 'bg-bible-accent text-white shadow-lg'
-                                                    : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                                                ? 'bg-bible-accent text-white shadow-lg'
+                                                : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
                                                 }`}
                                         >
                                             {num}
@@ -101,7 +104,7 @@ export const ZenSidebar: React.FC = () => {
                                 <Info size={16} />
                                 <span className="text-xs font-sans">도움말 및 안내</span>
                             </div>
-                            <p className="text-[10px] text-gray-300 font-sans">© 2026 BibleTyping. version 0.1.0</p>
+                            <p className="text-[10px] text-gray-300 font-sans">© 2026 BibleTyping</p>
                         </div>
                     </motion.div>
                 )}

@@ -23,7 +23,7 @@ export default function Home() {
   }, [currentVerse, setCurrentVerse]);
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <main className="relative min-h-screen flex flex-col items-center overflow-hidden">
       {/* 배경 장식 (미니멀) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-bible-accent/5 blur-[120px] rounded-full" />
@@ -36,16 +36,14 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="z-10 w-full"
-          >
+            className="z-10 w-full max-w-4xl px-4">
             {/* 상단 정보 (구절 정보) */}
-            <div className="text-center mb-8">
+            <div className="text-left mt-8 mb-4">
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.4 }}
                 transition={{ delay: 0.8 }}
-                className="text-xs font-sans tracking-[0.2em] font-medium"
-              >
+                className="text-xs font-sans tracking-[0.2em] font-medium">
                 {currentVerse?.book} {currentVerse?.chapter}:{currentVerse?.verse}
               </motion.span>
             </div>

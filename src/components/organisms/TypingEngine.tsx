@@ -27,13 +27,26 @@ export const TypingEngine: React.FC = () => {
         }
     };
 
+    // 글자 클릭 시 해당 위치로 커서 이동
+    const handleCharClick = (index: number) => {
+        if (isFinished) return;
+
+        // 클릭한 위치까지의 텍스트로 입력값 설정
+        const newInput = targetText.substring(0, index);
+        onInputChange(newInput);
+
+        // 입력창에 포커스
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
     return (
         <div
-            className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-12 cursor-text"
-            onClick={handleContainerClick}
-        >
+            className="flex flex-col items-start w-full px-4 cursor-text"
+            onClick={handleContainerClick}>
             {/* 진행바 */}
-            <div className="w-full h-1 bg-gray-100 rounded-full mb-12 overflow-hidden shadow-sm">
+            <div className="w-full h-1 bg-gray-100 rounded-full mb-8 overflow-hidden shadow-sm">
                 <motion.div
                     className="h-full bg-bible-accent"
                     initial={{ width: 0 }}
@@ -43,8 +56,8 @@ export const TypingEngine: React.FC = () => {
             </div>
 
             {/* 성경 구절 디스플레이 */}
-            <div className="relative text-3xl md:text-4xl font-myeongjo leading-relaxed text-center tracking-wide min-h-[200px] flex items-center justify-center">
-                <div className="flex flex-wrap justify-center gap-x-1 gap-y-4">
+            <div className="relative text-3xl md:text-4xl font-myeongjo font-bold leading-relaxed text-left tracking-wide min-h-[200px]">
+                <div className="flex flex-wrap gap-x-1 gap-y-4">
                     {charFeedbacks.map((fb, idx) => (
                         <motion.span
                             key={idx}
@@ -54,10 +67,13 @@ export const TypingEngine: React.FC = () => {
                                 color: fb.status === 'correct' ? '#2c2c2c' : fb.status === 'wrong' ? '#ef4444' : fb.status === 'current' ? '#8b4513' : '#a0a0a0',
                             }}
                             className={cn(
-                                "relative inline-block transition-colors duration-200",
+                                "relative inline-block transition-colors duration-200 cursor-pointer hover:opacity-80",
                                 fb.status === 'current' && "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-bible-accent after:animate-pulse"
                             )}
-                        >
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCharClick(idx);
+                            }}>
                             {fb.char === ' ' ? '\u00A0' : fb.char}
                         </motion.span>
                     ))}
