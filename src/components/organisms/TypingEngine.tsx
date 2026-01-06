@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useTyping } from '@/hooks/useTyping';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { decomposeHangul } from '@/utils/hangulUtils';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -14,6 +13,7 @@ function cn(...inputs: ClassValue[]) {
 export const TypingEngine: React.FC = () => {
     const { charFeedbacks, onInputChange, progress, isFinished, targetText, userInput } = useTyping();
     const inputRef = useRef<HTMLInputElement>(null);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     // 자동 포커스
     useEffect(() => {
@@ -28,12 +28,18 @@ export const TypingEngine: React.FC = () => {
         }
     };
 
-    // 글자 클릭 시 해당 위치로 커서 이동
+    // 글자 클릭 시 해당 글자만 수정 가능
     const handleCharClick = (index: number) => {
         if (isFinished) return;
 
-        // 클릭한 위치까지의 텍스트로 입력값 설정
-        const newInput = targetText.substring(0, index);
+        // 이미 입력된 글자만 편집 가능
+        if (index >= userInput.length) return;
+
+        // 편집 모드 활성화
+        setEditingIndex(index);
+
+        // 해당 위치의 글자를 제거하여 재입력 유도
+        const newInput = userInput.substring(0, index) + userInput.substring(index + 1);
         onInputChange(newInput);
 
         // 입력창에 포커스
@@ -42,20 +48,20 @@ export const TypingEngine: React.FC = () => {
         }
     };
 
-    // 사용자가 입력하는 자모를 실시간으로 표시
-    const currentTypingJamo = useMemo(() => {
-        if (userInput.length === 0 || userInput.length > targetText.length) return [];
+    // 사용자가 입력하는 글자를 조합된 형태로 표시
+    const currentTypingChar = useMemo(() => {
+        if (userInput.length === 0 || userInput.length > targetText.length) return '';
 
         // 마지막 입력 글자
         const lastInputChar = userInput[userInput.length - 1];
         const targetChar = targetText[userInput.length - 1];
 
-        // 아직 완성되지 않았거나 틀린 경우 자모 표시
+        // 아직 완성되지 않았거나 틀린 경우 글자 표시
         if (lastInputChar !== targetChar) {
-            return decomposeHangul(lastInputChar);
+            return lastInputChar;
         }
 
-        return [];
+        return '';
     }, [userInput, targetText]);
 
     return (
@@ -91,17 +97,15 @@ export const TypingEngine: React.FC = () => {
                                 e.stopPropagation();
                                 handleCharClick(idx);
                             }}>
-                            {/* 사용자가 입력하는 자모를 글자와 겹쳐서 표시 */}
-                            {idx === userInput.length - 1 && currentTypingJamo.length > 0 && (
+                            {/* 사용자가 입력하는 글자를 조합된 형태로 표시 */}
+                            {idx === userInput.length - 1 && currentTypingChar && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="absolute inset-0 flex items-center justify-center gap-0.5 text-2xl md:text-3xl text-bible-accent/80 font-sans pointer-events-none"
+                                    className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl text-bible-accent/80 font-myeongjo pointer-events-none"
                                 >
-                                    {currentTypingJamo.map((jamo, jamoIdx) => (
-                                        <span key={jamoIdx}>{jamo}</span>
-                                    ))}
+                                    {currentTypingChar}
                                 </motion.div>
                             )}
                             {fb.char === ' ' ? '\u00A0' : fb.char}
@@ -116,7 +120,24 @@ export const TypingEngine: React.FC = () => {
                 type="text"
                 className="absolute opacity-0 pointer-events-none"
                 value={userInput}
-                onChange={(e) => onInputChange(e.target.value)}
+                onChange={(e) => {
+                    const newValue = e.target.value;
+
+                    if (editingIndex !== null) {
+                        // 편집 모드: 해당 위치에 새 글자 삽입
+                        if (newValue.length > userInput.length) {
+                            const insertedChar = newValue[newValue.length - 1];
+                            const newInput = userInput.substring(0, editingIndex) +
+                                insertedChar +
+                                userInput.substring(editingIndex);
+                            onInputChange(newInput);
+                            setEditingIndex(null);
+                        }
+                    } else {
+                        // 일반 모드
+                        onInputChange(newValue);
+                    }
+                }}
                 disabled={isFinished}
                 autoFocus
             />

@@ -25,4 +25,28 @@ export const SAMPLE_VERSES: Verse[] = [
         text: '여호와는 나의 목자시니 내가 부족함이 없으리로다',
         translation: 'KRV',
     },
+    {
+        id: '4',
+        book: '빌립보서',
+        chapter: 4,
+        verse: 13,
+        text: '내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라',
+        translation: 'KRV',
+    },
+    {
+        id: '5',
+        book: '잠언',
+        chapter: 3,
+        verse: 5,
+        text: '너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라',
+        translation: 'KRV',
+    },
+    {
+        id: '6',
+        book: '로마서',
+        chapter: 8,
+        verse: 28,
+        text: '우리가 알거니와 하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라',
+        translation: 'KRV',
+    },
 ];
