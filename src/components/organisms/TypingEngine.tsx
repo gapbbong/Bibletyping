@@ -5,6 +5,7 @@ import { useTyping } from '@/hooks/useTyping';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useStore } from '@/store/useStore';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -12,6 +13,7 @@ function cn(...inputs: ClassValue[]) {
 
 export const TypingEngine: React.FC = () => {
     const { charFeedbacks, onInputChange, progress, isFinished, targetText, userInput } = useTyping();
+    const { settings, repetitionLeft, currentVerse } = useStore();
     const inputRef = useRef<HTMLInputElement>(null);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -64,6 +66,25 @@ export const TypingEngine: React.FC = () => {
         return '';
     }, [userInput, targetText]);
 
+    // 현재 회차 계산 및 난이도별 숨김 로직
+    const hiddenIndices = useMemo(() => {
+        const currentRound = settings.repetitionCount - repetitionLeft + 1;
+        const nounIndices = currentVerse?.nounIndices || [];
+
+        if (currentRound >= 7) {
+            // 7회 이상: 모든 글자 숨김
+            return Array.from({ length: targetText.length }, (_, i) => i);
+        } else if (currentRound >= 5) {
+            // 5-6회차: 명사 4개 숨김 (첫 16개 인덱스)
+            return nounIndices.slice(0, Math.min(16, nounIndices.length));
+        } else if (currentRound >= 3) {
+            // 3-4회차: 명사 2개 숨김 (첫 8개 인덱스)
+            return nounIndices.slice(0, Math.min(8, nounIndices.length));
+        }
+
+        return [];
+    }, [settings.repetitionCount, repetitionLeft, currentVerse, targetText.length]);
+
     return (
         <div
             className="flex flex-col items-start w-full px-4 cursor-text"
@@ -86,7 +107,7 @@ export const TypingEngine: React.FC = () => {
                             key={idx}
                             initial={{ opacity: 0.3 }}
                             animate={{
-                                opacity: fb.status === 'pending' ? 0.5 : 1,
+                                opacity: hiddenIndices.includes(idx) ? 0 : (fb.status === 'pending' ? 0.5 : 1),
                                 color: fb.status === 'correct' ? '#2c2c2c' : fb.status === 'wrong' ? '#ef4444' : '#a0a0a0',
                             }}
                             className={cn(

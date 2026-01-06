@@ -38,7 +38,7 @@ export const ZenSidebar: React.FC = () => {
                                 <Layers size={24} />
                                 <h2 className="text-xl font-myeongjo font-bold">환경 설정</h2>
                             </div>
-                            <span className="text-xs text-gray-400 font-sans">v1.4</span>
+                            <span className="text-xs text-gray-400 font-sans">v1.5</span>
                         </div>
 
                         <div className="space-y-8 flex-1">

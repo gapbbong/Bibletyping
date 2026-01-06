@@ -5,6 +5,7 @@ export interface Verse {
     verse: number;
     text: string;
     translation: string;
+    nounIndices?: number[]; // 명사 위치 인덱스 (난이도 조절용)
 }
 
 export interface TypingState {
